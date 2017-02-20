@@ -8,7 +8,6 @@
       overview: README.md
       defaults: &memcachedIconUrl "https://www.brandeps.com/logo-download/M/Memcached-01.png"
     items:
-      - https://raw.githubusercontent.com/brooklyncentral/common-catalog-utils/master/common/src/main/resources/common/common.bom
       - id: memcached-node
         itemType: entity
         iconUrl: *memcachedIconUrl
@@ -75,13 +74,8 @@
               sudo systemctl start memcached
         
             checkRunning.command: |
-              memcached_pid=$(pidof memcached)
-              if [[ -z ${memcached_pid} ]]; then
-                  echo "false"
-              else
-                  echo "true"
-              fi
-        
+              pgrep memcached
+
             stop.command: |
               sudo systemctl stop memcached
         
