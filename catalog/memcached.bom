@@ -103,12 +103,12 @@
                 memcached-tool 127.0.0.1:${PORT} dump
 
       - id: memcached-node-template
-        name: "Varnish Node"
+        name: "Memcached Node"
         description: |
           A single Memcached node
         itemType: template
         iconUrl: *memcachedIconUrl
         item:
-          brooklyn.parameters: memcachedNodeParams
+          brooklyn.parameters: *memcachedNodeParams
           services:
-            - type: varnish-node
+            - type: memcached-node

@@ -1,6 +1,6 @@
 # Memcached
 
-[Varnish Cache](https://www.varnish-cache.org) is a Free & open source,
+[Memcached](http://memcached.org) is a Free & open source,
 high-performance, distributed memory object caching system.
 
 ## Basic Configuration
