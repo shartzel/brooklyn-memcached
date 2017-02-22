@@ -8,7 +8,6 @@
       overview: README.md
       defaults: &memcachedIconUrl "https://www.brandeps.com/logo-download/M/Memcached-01.png"
     items:
-      - https://raw.githubusercontent.com/brooklyncentral/common-catalog-utils/master/common/src/main/resources/common/common.bom
       - id: memcached-node
         itemType: entity
         iconUrl: *memcachedIconUrl
@@ -75,13 +74,8 @@
               sudo systemctl start memcached
         
             checkRunning.command: |
-              memcached_pid=$(pidof memcached)
-              if [[ -z ${memcached_pid} ]]; then
-                  echo "false"
-              else
-                  echo "true"
-              fi
-        
+              pgrep memcached
+
             stop.command: |
               sudo systemctl stop memcached
         
@@ -109,12 +103,12 @@
                 memcached-tool 127.0.0.1:${PORT} dump
 
       - id: memcached-node-template
-        name: "Varnish Node"
+        name: "Memcached Node"
         description: |
           A single Memcached node
         itemType: template
         iconUrl: *memcachedIconUrl
         item:
-          brooklyn.parameters: memcachedNodeParams
+          brooklyn.parameters: *memcachedNodeParams
           services:
-            - type: varnish-node
+            - type: memcached-node
