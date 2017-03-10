@@ -9,7 +9,7 @@ brooklyn.catalog:
       name: "Memcached Node Tests"
       item:
         services:
-        - type: memcached-node-template
+        - type: memcached-node
           id: memcached-node
         - type: test-case
           name: "Memcached Node Tests"
@@ -24,3 +24,11 @@ brooklyn.catalog:
             name: "02. Memcached Node restart process"
           - type: assert-stop-and-restart-process
             name: "03. Memcached Node stop and restart process"
+          - type: invoke-effector
+            name: "04. Check memcached-tool-based effector"
+            # All effectors are memcached-tool, so one test will suffice
+            brooklyn.config:
+              targetId: memcached-node
+              effector: DisplayStats
+              assert:
+              - contains: accepting_conns

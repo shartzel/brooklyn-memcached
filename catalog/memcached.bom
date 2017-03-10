@@ -27,7 +27,7 @@
               Port on which to listen
           - name: memcached.user
             label: "User to run memcached"
-            default: memcached
+            default: "memcached"
             description: |
               User to run memcached
           - name: memcached.maxconn
@@ -50,7 +50,7 @@
               PORT: $brooklyn:config("memcached.port")
               RUNAS_USER: $brooklyn:config("memcached.user")
               MAXCONN: $brooklyn:config("memcached.maxconn")
-              CACHE_SIZE: $brooklyn:config("memcached.cachesize")
+              CACHESIZE: $brooklyn:config("memcached.cachesize")
               OPTIONS: $brooklyn:config("memcached.options")
         
             pre.install.command: |
@@ -64,7 +64,7 @@
               # Write configuration file
               sudo -E tee ${CONFIG_FILE} <<-EOF_CONFIGURATION
               PORT="${PORT}"
-              USER="${USER}"
+              USER="${RUNAS_USER}"
               MAXCONN="${MAXCONN}"
               CACHESIZE="${CACHESIZE}"
               OPTIONS="${OPTIONS}"
@@ -101,14 +101,3 @@
                 Dump Keys and Values
               command: |
                 memcached-tool 127.0.0.1:${PORT} dump
-
-      - id: memcached-node-template
-        name: "Memcached Node"
-        description: |
-          A single Memcached node
-        itemType: template
-        iconUrl: *memcachedIconUrl
-        item:
-          brooklyn.parameters: *memcachedNodeParams
-          services:
-            - type: memcached-node
