@@ -12,6 +12,7 @@
       overview: README.md
     item:
       type: centos-software-process
+      name: Memcached Node
       brooklyn.parameters:
         - name: memcached.configfile
           label: "Memcached Configuration File"
