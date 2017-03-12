@@ -1,0 +1,34 @@
+brooklyn.catalog:
+  version: "0.1"
+  items:
+    - "https://raw.githubusercontent.com/brooklyncentral/common-catalog-utils/master/common-tests/src/main/resources/commontests/common.tests.bom"
+    - id: memcached-node-tests
+      version: "0.1"
+      itemType: template
+      iconUrl: "https://www.brandeps.com/logo-download/M/Memcached-01.png"
+      name: "Memcached Node Tests"
+      item:
+        services:
+        - type: memcached-node
+          id: memcached-node
+        - type: test-case
+          name: "Memcached Node Tests"
+          brooklyn.config:
+            timeout: 1h
+            targetId: memcached-node
+            process.grep.name: "/usr/bin/[m]emcached"
+          brooklyn.children:
+          - type: assert-up-and-running-initial
+            name: "01. Memcached Node up and running"
+          - type: assert-restart-process
+            name: "02. Memcached Node restart process"
+          - type: assert-stop-and-restart-process
+            name: "03. Memcached Node stop and restart process"
+          - type: invoke-effector
+            name: "04. Check memcached-tool-based effector"
+            # All effectors are memcached-tool, so one test will suffice
+            brooklyn.config:
+              targetId: memcached-node
+              effector: DisplayStats
+              assert:
+              - contains: accepting_conns

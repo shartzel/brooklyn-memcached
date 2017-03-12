@@ -1,0 +1,103 @@
+  brooklyn.catalog:
+    version: "0.1"
+    id: memcached-node
+    name: Memcached Node
+    iconUrl: "https://www.brandeps.com/logo-download/M/Memcached-01.png"
+    itemType: entity
+    description: |
+      Free & open source, high-performance, distributed memory object
+      caching system. http://memcached.org/
+    publish:
+      license_code: Apache-2.0
+      overview: README.md
+    item:
+      type: centos-software-process
+      name: Memcached Node
+      brooklyn.parameters:
+        - name: memcached.configfile
+          label: "Memcached Configuration File"
+          default: /etc/sysconfig/memcached
+          description: |
+            Path to configuration file
+        - name: memcached.port
+          label: "Port"
+          default: 11211
+          description: |
+            Port on which to listen
+        - name: memcached.user
+          label: "User to run memcached"
+          default: "memcached"
+          description: |
+            User to run memcached
+        - name: memcached.maxconn
+          label: ""
+          default: 1024
+          description: |
+            Maximum Connections
+        - name: memcached.cachesize
+          label: "Cache Size"
+          default: 64
+          description: |
+            Cache Size
+        - name: memcached.options
+          label: ""
+          description: |
+            Pass arbitrary options to memcached
+
+      brooklyn.config:
+        shell.env:
+          CONFIG_FILE: $brooklyn:config("memcached.configfile")
+          PORT: $brooklyn:config("memcached.port")
+          RUNAS_USER: $brooklyn:config("memcached.user")
+          MAXCONN: $brooklyn:config("memcached.maxconn")
+          CACHESIZE: $brooklyn:config("memcached.cachesize")
+          OPTIONS: $brooklyn:config("memcached.options")
+    
+        pre.install.command: |
+          sudo yum update -y
+    
+        install.command: |
+          sudo yum install -y memcached
+          sudo systemctl enable memcached
+
+        customize.command: |
+          # Write configuration file
+          sudo -E tee ${CONFIG_FILE} <<-EOF_CONFIGURATION
+          PORT="${PORT}"
+          USER="${RUNAS_USER}"
+          MAXCONN="${MAXCONN}"
+          CACHESIZE="${CACHESIZE}"
+          OPTIONS="${OPTIONS}"
+          EOF_CONFIGURATION
+    
+        launch.command: |
+          sudo systemctl start memcached
+    
+        checkRunning.command: |
+          pgrep memcached
+
+        stop.command: |
+          sudo systemctl stop memcached
+    
+      brooklyn.initializers:
+        - type: org.apache.brooklyn.core.effector.ssh.SshCommandEffector
+          brooklyn.config:
+            name: DisplaySlabs
+            description: |
+              Show slabs
+            command: |
+              memcached-tool 127.0.0.1:${PORT} display
+        - type: org.apache.brooklyn.core.effector.ssh.SshCommandEffector
+          brooklyn.config:
+            name: DisplayStats
+            description: |
+              Show general stats
+            command: |
+              memcached-tool 127.0.0.1:${PORT} stats
+        - type: org.apache.brooklyn.core.effector.ssh.SshCommandEffector
+          brooklyn.config:
+            name: DumpKeysAndValues
+            description: |
+              Dump Keys and Values
+            command: |
+              memcached-tool 127.0.0.1:${PORT} dump
